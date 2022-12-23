@@ -149,7 +149,7 @@ def check_response(response):
         text_error = 'Структура данных не соответсвует списку!'
         logger.error(text_error)
         raise TypeError(text_error)
-    return response['homeworks']
+    return response['homeworks'][0]
 
 
 def parse_status(homework):
