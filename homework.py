@@ -42,6 +42,7 @@ class NotDocumentStatusError(Exception):
     Возникает, когда полученный статус не равен тем,
     которые есть в 'HOMEWORK_VERDICTS'.
     """
+
     pass
 
 
@@ -50,16 +51,19 @@ class UrlApiError(Exception):
     Ошибка подключения к ENDPOINT.
     Возникает, когда код поключения не равен 200.
     """
+
     pass
 
 
 class RequestExceptionError(Exception):
     """Ошибка запроса."""
+
     pass
 
 
 class EmptyDictionaryOrListError(Exception):
     """Ошибка пустой структуры."""
+
     pass
 
 
