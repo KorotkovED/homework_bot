@@ -27,7 +27,6 @@ HOMEWORK_VERDICTS = {
 logging.basicConfig(
     level=logging.DEBUG,
     filename='program.log',
-    filemode='w',
     format='%(asctime)s - %(levelname)s - %(message)s')
 
 logger = logging.getLogger(__name__)
@@ -72,19 +71,20 @@ def check_tokens():
     Проверяет доступность переменных окружения.
     которые необходимы для работы программы.
     """
+    tokens = {
+        'PRACTICUM_TOKEN': PRACTICUM_TOKEN,
+        'TELEGRAM_TOKEN': TELEGRAM_TOKEN,
+        'TELEGRAM_CHAT_ID': TELEGRAM_CHAT_ID
+    }
     token_error = False
     tokens_msg = (
         'Программа принудительно остановлена. '
         'Отсутствует обязательная переменная окружения:')
-    if PRACTICUM_TOKEN is None:
-        token_error = True
-        logger.critical(f'{tokens_msg} PRACTICUM_TOKEN')
-    elif TELEGRAM_TOKEN is None:
-        token_error = True
-        logger.critical(f'{tokens_msg} TELEGRAM_TOKEN')
-    elif TELEGRAM_CHAT_ID is None:
-        token_error = True
-        logger.critical(f'{tokens_msg} TELEGRAM_CHAT_ID')
+
+    for key, value in tokens.items():
+        if value is None:
+            token_error = True
+            logger.critical(f'{tokens_msg} {key}')
     return token_error
 
 
@@ -134,7 +134,7 @@ def check_response(response):
     На входе: запрос к сервису,
     На выходе: конкретное д/з.
     """
-    if type(response) != dict:
+    if isinstance(response, (str, tuple, list, float, int)):
         text_error = 'Структура данных не соответсвует словарю!'
         logger.error(text_error)
         raise TypeError(text_error)
@@ -145,7 +145,7 @@ def check_response(response):
         logger.error(text_error)
         raise EmptyDictionaryOrListError(text_error)
 
-    if type(response.get('homeworks')) != list:
+    if isinstance(response.get('homeworks'), (str, tuple, dict, float, int)):
         text_error = 'Структура данных не соответсвует списку!'
         logger.error(text_error)
         raise TypeError(text_error)
@@ -179,13 +179,14 @@ def main():
     """Основная логика работы бота."""
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     tokens_error = check_tokens()
-    if tokens_error is True:
+    if tokens_error:
         message = 'Кажется что-то пошло не так :((('
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logger.debug(message)
         exit()
 
-    timestamp = int(time.time())
+    # во избежании ошибки индексации, возьмем промежуток времени за 2 недели.
+    timestamp = int(time.time()) - 1209600
     bot.send_message(chat_id=TELEGRAM_CHAT_ID, text='Я начал отслеживание!')
     hw_status = 'reviewing'
     errors = True
