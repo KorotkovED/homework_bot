@@ -149,6 +149,8 @@ def check_response(response):
         text_error = 'Структура данных не соответсвует списку!'
         logger.error(text_error)
         raise TypeError(text_error)
+    if response.get('homeworks') == []:
+        return {}
     return response['homeworks'][0]
 
 
@@ -185,8 +187,7 @@ def main():
         logger.debug(message)
         exit()
 
-    # во избежании ошибки индексации, возьмем промежуток времени за 2 недели.
-    timestamp = int(time.time()) - 1209600
+    timestamp = int(time.time())
     bot.send_message(chat_id=TELEGRAM_CHAT_ID, text='Я начал отслеживание!')
     hw_status = 'reviewing'
     errors = True
